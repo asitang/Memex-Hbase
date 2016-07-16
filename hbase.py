@@ -31,7 +31,7 @@ class HbaseTable(object):
 
     def as_stream(self, row_start='', retry_delay=10, log_delay=2000, limit=None):
         ended = False
-        count = 
+        count = 0
         st = curr_millitime()
         while not ended:
             try:
@@ -71,10 +71,11 @@ if  __name__ == '__main__':
     parser.add_argument("-c", "--cols", default="info:s3_url", help="output column names (index key is included by default as first entry). Example: col1,col2")
     parser.add_argument("-t", "--table", default="escorts_images_sha1_infos", help="table name")
     parser.add_argument("-r", "--row_start", default="", help="Start row key. ignore to read from start.")
+    parser.add_argument("-l", "--limit", default=None, help="Limit number of rows. Ignore to dump all", type=int)
     args = vars(parser.parse_args())
     print(args)
     cols = args['cols'].split(",")
     assert cols
-    recs = HbaseTable(args['server'], args['table']).as_stream(args['row_start'])
+    recs = HbaseTable(args['server'], args['table']).as_stream(args['row_start'], limit=args['limit'])
     dump_as_csv(recs, out_file=args['out'], cols=cols)
     print("Done")
