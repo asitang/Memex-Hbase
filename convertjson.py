@@ -13,9 +13,9 @@ def create_query_from_json(jsonstring):
         if key not in 'x-parsed-by_ts_md':
             if ':' in key:
                 key=key.replace(':','__')
-            query['tika:'+key]=value
+            query['tika:'+key]=value.encode('utf8')
 
-        query['ocr:content']=ocr
+        query['ocr:content']=ocr.encode('utf8')
 
     #query=sjson.dumps(query)
 
