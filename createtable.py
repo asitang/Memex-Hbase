@@ -35,13 +35,24 @@ def printTable(IP,tablename):
         print data
 
 
+class readablestring(object):
+    def __init__(self, string):
+        self.string=string
+
+    def read(self):
+        return self.string
+
 if  __name__ == '__main__':
     IP='10.1.94.57'
     tablename='escorts_images_sha1_dev'
-    uniquerowkey='123'
+    uniquerowkey=1
     deleteTable(IP,tablename)
-    jsonstring = open('/Users/asitangm/Desktop/test.json', 'r') #json dumped by parser indexer
-    query = queryfy.create_query_from_json(jsonstring)
-    updateTable(IP,tablename,uniquerowkey,query)
+    createMyTable(IP, tablename)
+    jsonfile = open('/Users/asitangm/Desktop/out6.json', 'r') #json dumped by parser indexer
+
+    for jsonstring in jsonfile:
+        uniquerowkey+=1
+        query = queryfy.create_query_from_json(readablestring(jsonstring))
+        updateTable(IP,tablename,str(uniquerowkey),query)
 
 
