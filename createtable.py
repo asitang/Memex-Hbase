@@ -22,7 +22,7 @@ def createMyTable(IP,tablename):
 def updateTable(IP,tablename,uniquerowkey,query):
     connection = db.Connection(IP)
     table=connection.table(tablename)
-    print query
+    #print query
     table.put(uniquerowkey,query) #put-eg: table.put('1234',{"tika:cf1":"value1","ocr:cf2":"val2"})
 
 
@@ -48,11 +48,11 @@ if  __name__ == '__main__':
     uniquerowkey=1
     deleteTable(IP,tablename)
     createMyTable(IP, tablename)
-    jsonfile = open('/Users/asitangm/Desktop/out6.json', 'r') #json dumped by parser indexer
-
-    for jsonstring in jsonfile:
-        uniquerowkey+=1
-        query = queryfy.create_query_from_json(readablestring(jsonstring))
-        updateTable(IP,tablename,str(uniquerowkey),query)
-
-
+    # jsonfile = open('/Users/asitangm/Desktop/out6.json', 'r') #json dumped by parser indexer
+    #
+    # for jsonstring in jsonfile:
+    #     uniquerowkey+=1
+    #     query = queryfy.create_query_from_json(readablestring(jsonstring))
+    #     updateTable(IP,tablename,str(uniquerowkey),query)
+    #
+    #
