@@ -67,7 +67,7 @@ def dump_as_csv(stream, out_file, cols):
 if  __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument("-s", "--server", default="10.1.94.57", help="hbase server host")
-    parser.add_argument("-o", "--out", help="output file path", required=True)
+    parser.add_argument("-o", "--out",  default="/Users/asitangm/Desktop/bleu.txt" , help="output file path")
     parser.add_argument("-c", "--cols", default="info:s3_url", help="output column names (index key is included by default as first entry). Example: col1,col2")
     parser.add_argument("-t", "--table", default="escorts_images_sha1_infos", help="table name")
     parser.add_argument("-r", "--row_start", default="", help="Start row key. ignore to read from start.")
