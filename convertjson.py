@@ -1,5 +1,4 @@
 import json
-import simplejson as sjson
 
 def create_query_from_json(jsonstring):
     result=json.load(jsonstring)
