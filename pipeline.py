@@ -69,8 +69,8 @@ def pipe(folder,i):
         for line in inputfile:
             id=line.split(',')[0]
             url=line.split(',')[1]
-            urllib.urlretrieve(url, folder+'_images/'+id)
-            outfile.write(folder+'_images/'+id+'\n')
+            urllib.urlretrieve(url, folder+'_images/'+id+'.jpg')
+            outfile.write(folder+'_images/'+id+'.jpg\n')
 
         #run extraction by giving the list of files
 
