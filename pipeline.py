@@ -44,7 +44,7 @@ def create_part_files(folder):
 
     #get all the ids and links from hbase
     recs=hbase.HbaseTable('10.1.94.57', 'escorts_images_sha1_infos').as_stream('', limit=None)
-    hbase.dump_as_csv(recs, out_file=folder+'/all.txt', cols='info:s3_url')
+    hbase.dump_as_csv(recs, out_file=folder+'/all.txt', cols=['info:s3_url'])
 
     #divide all into part files
     split(folder,folder+'/all.txt')
@@ -52,8 +52,8 @@ def create_part_files(folder):
 
 
 def pipe(folder,i):
-    logger = logging.getLogger('HTextractions')
-    hdlr = logging.FileHandler(folder+'_logs/'+str(i))
+    logger = logging.getLogger('HTextractions'+str(i))
+    hdlr = logging.FileHandler(folder+'_logs/'+str(i)+'.log')
     logger.addHandler(hdlr)
     logger.setLevel(logging.WARNING)
 
@@ -84,7 +84,7 @@ def pipe(folder,i):
 
         IP = '10.1.94.57'
         tablename = 'escorts_images_sha1_dev'
-        extratedfile = open(folder+'_extracted',str(i),'r')  # json dumped by parser indexer
+        extratedfile = open(folder+'_extracted/'+str(i),'r')  # json dumped by parser indexer
         connection = db.Connection(IP)
         table = connection.table(tablename)
 
@@ -103,9 +103,10 @@ if __name__ == '__main__':
     os.mkdir('/data/HT_extractions/data_imagelist')
     os.mkdir('/data/HT_extractions/data_extracted')
     os.mkdir('/data/HT_extractions/data_logs')
+    os.mkdir('/data/HT_extractions/data_images')
     create_part_files('/data/HT_extractions/data_urllist')
     jobs = []
     for i in range(0,8):
-        p = multiprocessing.Process(target=pipe, args=('data/HT_extractions/data',i,))
+        p = multiprocessing.Process(target=pipe, args=('/data/HT_extractions/data',i,))
         jobs.append(p)
         p.start()
