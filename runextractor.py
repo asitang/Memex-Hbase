@@ -9,4 +9,4 @@ def extract(folderin,folderout,filenumber):
          +' -list '+folderin+'/'+filenumber+' -out '+folderout+'/'+filenumber+'.json',
         shell=True,
         )
-    #print output
+    #print output here
