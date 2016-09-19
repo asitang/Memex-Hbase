@@ -90,7 +90,7 @@ def pipe(folder,i):
 
         for jsonstring in extratedfile:
             print "PROCESS "+str(i)
-            result = json.load(jsonstring)
+            result = json.load(createtable.readablestring(jsonstring))
             uniquerowkey=result['id']
             query = queryfy.create_query_from_json(createtable.readablestring(jsonstring))
             table.put(uniquerowkey, query)
