@@ -72,7 +72,7 @@ def pipe(folder,i):
             urllib.urlretrieve(url, folder+'_images/'+id+'.jpg')
             outfile.write(folder+'_images/'+id+'.jpg\n')
 
-        #run extraction by giving the list of files
+        #run extraction by giving the list of files.
 
         outfile.close()
         extract.extract(folder+'_imagelist',folder+'_extracted',str(i))
