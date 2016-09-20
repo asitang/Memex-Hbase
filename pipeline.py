@@ -10,7 +10,7 @@ import hbase
 import os
 import traceback
 
-def split(outfolder,infile,split=1000):
+def split(outfolder,infile,split=500):
     filein=open(infile,'r')
     lines=filein.readlines()
     length= len(lines)
