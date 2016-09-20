@@ -8,8 +8,9 @@ import happybase as db
 import logging
 import hbase
 import os
+import traceback
 
-def split(outfolder,infile,split=100):
+def split(outfolder,infile,split=1000):
     filein=open(infile,'r')
     lines=filein.readlines()
     length= len(lines)
@@ -56,48 +57,62 @@ def pipe(folder,i):
     hdlr = logging.FileHandler(folder+'_logs/'+str(i)+'.log')
     logger.addHandler(hdlr)
     logger.setLevel(logging.WARNING)
+    process = str(i)
+    logger.warn('Starting Process: '+process)
+
 
     while True:
 
-        #open a part file id, url
-        if (os.path.exists(folder+'_urllist/'+str(i))==False):
-            break
-        inputfile=open(folder+'_urllist/'+str(i),'r')
-        outfile=open(folder+'_imagelist/'+str(i),'w')
+        try:
+            #open a part file id, url
+            logger.warn('Process ' + process + ': Partfile: ' + str(i) + ' ' + 'opening the part file for id and url')
+            if (os.path.exists(folder+'_urllist/'+str(i))==False):
+                break
+            inputfile=open(folder+'_urllist/'+str(i),'r')
+            outfile=open(folder+'_imagelist/'+str(i),'w')
 
 
 
-        #fetch the images, name them as their id and create a part file of local file locations
-        for line in inputfile:
-            id=line.split(',')[0]
-            url=line.split(',')[1]
-            urllib.urlretrieve(url, folder+'_images/'+id+'.jpg')
-            outfile.write(folder+'_images/'+id+'.jpg\n')
 
-        #run extraction by giving the list of files.
+            #fetch the images, name them as their id and create a part file of local file locations
+            logger.warn('Process ' + process + ': Partfile: ' + str(i) + ' ' + 'fetching image urls now..')
+            for line in inputfile:
+                id=line.split(',')[0]
+                url=line.split(',')[1]
+                logger.warn('Process ' + process + ': Partfile: ' + str(i) + ' ' + 'url: '+url)
+                urllib.urlretrieve(url, folder+'_images/'+id+'.jpg')
+                outfile.write(folder+'_images/'+id+'.jpg\n')
 
-        outfile.close()
-        extract.extract(folder+'_imagelist',folder+'_extracted',str(i))
+            # run extraction by giving the list of files.
+            logger.warn('Process ' + process + ': Partfile: ' + str(i) + ' '+'Running extractions on the url list')
+            outfile.close()
+            extract.extract(folder+'_imagelist',folder+'_extracted',str(i))
 
 
-        #create a file with id and extraction and then send it to table
-        #TODO: refresh connection
-        #TODO: add logs
-        #TODO: add timings
-        #TODO: do error handling
+            #create a file with id and extraction and then send it to table
+            #TODO: refresh connection
+            #TODO: add logs
+            #TODO: add timings
+            #TODO: do error handling
+            logger.warn('Process ' + process + ': Partfile: ' + str(i) + ' ' + 'Connecting to the table')
+            IP = '10.1.94.57'
+            tablename = 'escorts_images_sha1_dev'
+            extratedfile = open(folder+'_extracted/'+str(i),'r')  # json dumped by parser indexer
+            connection = db.Connection(IP)
+            table = connection.table(tablename)
 
-        IP = '10.1.94.57'
-        tablename = 'escorts_images_sha1_dev'
-        extratedfile = open(folder+'_extracted/'+str(i),'r')  # json dumped by parser indexer
-        connection = db.Connection(IP)
-        table = connection.table(tablename)
+            linecount=0
+            for jsonstring in extratedfile:
+                linecount+=1
+                logger.warn('Process ' + process + ': Partfile: ' + str(i) + ' ' + 'uploading extracted jsons in line: '+linecount)
+                result = json.load(createtable.readablestring(jsonstring))
+                uniquerowkey=result['id']
+                query = queryfy.create_query_from_json(createtable.readablestring(jsonstring))
+                table.put(uniquerowkey, query)
 
-        for jsonstring in extratedfile:
-            print "PROCESS "+str(i)
-            result = json.load(createtable.readablestring(jsonstring))
-            uniquerowkey=result['id']
-            query = queryfy.create_query_from_json(createtable.readablestring(jsonstring))
-            table.put(uniquerowkey, query)
+        except Exception:
+            logger.warn('ERROR: Process ' + process + ': Partfile: ' + str(i) + ' ' + traceback.format_exc())
+
 
         i+=8
 
