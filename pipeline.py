@@ -91,9 +91,7 @@ def pipe(folder,i):
 
             #create a file with id and extraction and then send it to table
             #TODO: refresh connection
-            #TODO: add logs
             #TODO: add timings
-            #TODO: do error handling
             logger.warn('Process ' + process + ': Partfile: ' + str(i) + ' ' + 'Connecting to the table')
             IP = '10.1.94.57'
             tablename = 'escorts_images_sha1_dev'
@@ -104,7 +102,7 @@ def pipe(folder,i):
             linecount=0
             for jsonstring in extratedfile:
                 linecount+=1
-                logger.warn('Process ' + process + ': Partfile: ' + str(i) + ' ' + 'uploading extracted jsons in line: '+linecount)
+                logger.warn('Process ' + process + ': Partfile: ' + str(i) + ' ' + 'uploading extracted jsons in line: '+str(linecount))
                 result = json.load(createtable.readablestring(jsonstring))
                 uniquerowkey=result['id']
                 query = queryfy.create_query_from_json(createtable.readablestring(jsonstring))
