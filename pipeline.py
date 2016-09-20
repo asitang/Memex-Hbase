@@ -42,13 +42,21 @@ def split(outfolder,infile,split=500):
 
 
 def create_part_files(folder):
+    logger = logging.getLogger('HTextractions')
+    hdlr = logging.FileHandler(folder + '_logs/all.log')
+    logger.addHandler(hdlr)
+    logger.setLevel(logging.WARNING)
 
-    #get all the ids and links from hbase
-    recs=hbase.HbaseTable('10.1.94.57', 'escorts_images_sha1_infos').as_stream('', limit=None)
-    hbase.dump_as_csv(recs, out_file=folder+'/all.txt', cols=['info:s3_url'])
+    try:
+        #get all the ids and links from hbase
+        recs=hbase.HbaseTable('10.1.94.57', 'escorts_images_sha1_infos').as_stream('', limit=None)
+        hbase.dump_as_csv(recs, out_file=folder+'/all.txt', cols=['info:s3_url'])
 
-    #divide all into part files
-    split(folder,folder+'/all.txt')
+    except Exception:
+        logger.warn('ERROR: ' + traceback.format_exc())
+
+        #divide all into part files
+        split(folder,folder+'/all.txt')
 
 
 
