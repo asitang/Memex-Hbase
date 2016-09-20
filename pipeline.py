@@ -55,8 +55,8 @@ def create_part_files(folder):
     except Exception:
         logger.warn('ERROR: ' + traceback.format_exc())
 
-        #divide all into part files
-        split(folder,folder+'/all.txt')
+    #divide all into part files
+    split(folder,folder+'/all.txt')
 
 
 
