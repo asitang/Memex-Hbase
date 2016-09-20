@@ -65,9 +65,10 @@ def pipe(folder,i):
 
         try:
             #open a part file id, url
-            logger.warn('Process ' + process + ': Partfile: ' + str(i) + ' ' + 'opening the part file for id and url')
+
             if (os.path.exists(folder+'_urllist/'+str(i))==False):
                 break
+            logger.warn('Process ' + process + ': Partfile: ' + str(i) + ' ' + 'opening the part file for id and url')
             inputfile=open(folder+'_urllist/'+str(i),'r')
             outfile=open(folder+'_imagelist/'+str(i),'w')
 
