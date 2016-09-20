@@ -60,6 +60,8 @@ def pipe(folder,i):
     while True:
 
         #open a part file id, url
+        if (os.path.exists(folder+'_urllist/'+str(i))==False):
+            break
         inputfile=open(folder+'_urllist/'+str(i),'r')
         outfile=open(folder+'_imagelist/'+str(i),'w')
 
@@ -80,7 +82,9 @@ def pipe(folder,i):
 
         #create a file with id and extraction and then send it to table
         #TODO: refresh connection
-        #TODO: add error logs
+        #TODO: add logs
+        #TODO: add timings
+        #TODO: do error handling
 
         IP = '10.1.94.57'
         tablename = 'escorts_images_sha1_dev'
@@ -99,14 +103,14 @@ def pipe(folder,i):
 
 if __name__ == '__main__':
 
-    os.mkdir('/data/HT_extractions/data_urllist')
-    os.mkdir('/data/HT_extractions/data_imagelist')
-    os.mkdir('/data/HT_extractions/data_extracted')
-    os.mkdir('/data/HT_extractions/data_logs')
-    os.mkdir('/data/HT_extractions/data_images')
-    create_part_files('/data/HT_extractions/data_urllist')
+    os.mkdir('/mnt/HT_extractions/data_urllist')
+    os.mkdir('/mnt/HT_extractions/data_imagelist')
+    os.mkdir('/mnt/HT_extractions/data_extracted')
+    os.mkdir('/mnt/HT_extractions/data_logs')
+    os.mkdir('/mnt/HT_extractions/data_images')
+    create_part_files('/mnt/HT_extractions/data_urllist')
     jobs = []
     for i in range(0,8):
-        p = multiprocessing.Process(target=pipe, args=('/data/HT_extractions/data',i,))
+        p = multiprocessing.Process(target=pipe, args=('/mnt/HT_extractions/data',i,))
         jobs.append(p)
         p.start()
