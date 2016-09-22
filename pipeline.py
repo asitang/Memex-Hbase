@@ -55,9 +55,12 @@ def create_part_files(folder):
     except Exception:
         logger.warn('ERROR: ' + traceback.format_exc())
 
-    #divide all into part files
-    split(folder,folder+'/all.txt')
+    try:
+        #divide all into part files
+        split(folder,folder+'/all.txt')
 
+    except Exception:
+        logger.warn('ERROR: ' + traceback.format_exc())
 
 
 def pipe(folder,i):
