@@ -85,17 +85,24 @@ def pipe(folder,i):
 
             #fetch the images, name them as their id and create a part file of local file locations
             logger.warn('Process ' + process + ': Partfile: ' + str(i) + ' ' + 'fetching image urls now..')
+            filelist=[]
             for line in inputfile:
                 id=line.split(',')[0]
                 url=line.split(',')[1]
                 logger.warn('Process ' + process + ': Partfile: ' + str(i) + ' ' + 'url: '+url)
                 urllib.urlretrieve(url, folder+'_images/'+id+'.jpg')
                 outfile.write(folder+'_images/'+id+'.jpg\n')
+                filelist.append(folder+'_images/'+id+'.jpg')
+                outfile.flush()
 
             # run extraction by giving the list of files.
             logger.warn('Process ' + process + ': Partfile: ' + str(i) + ' '+'Running extractions on the url list')
             outfile.close()
             extract.extract(folder+'_imagelist',folder+'_extracted',str(i))
+
+            #remove the downloaded image files
+            for file in filelist:
+                os.remove(file)
 
 
             #create a file with id and extraction and then send it to table
