@@ -57,7 +57,7 @@ def create_part_files(folder):
 
     try:
         #divide all into part files
-        split(folder,folder+'/all.txt')
+        split(folder+'_urllist',folder+'_urllist/all.txt')
 
     except Exception:
         logger.warn('ERROR: ' + traceback.format_exc())
@@ -78,7 +78,8 @@ def pipe(folder,i):
             #open a part file id, url
 
             if (os.path.exists(folder+'_urllist/'+str(i))==False):
-                break
+                logger.warn('Process ' + process + ': Partfile: ' + str(i) + ' ' + 'couldnt open folder or not found!')
+                continue
             logger.warn('Process ' + process + ': Partfile: ' + str(i) + ' ' + 'opening the part file for id and url')
             inputfile=open(folder+'_urllist/'+str(i),'r')
             outfile=open(folder+'_imagelist/'+str(i),'w')
@@ -140,9 +141,9 @@ if __name__ == '__main__':
     os.mkdir('/mnt/HT_extractions/data_extracted')
     os.mkdir('/mnt/HT_extractions/data_logs')
     os.mkdir('/mnt/HT_extractions/data_images')
-    create_part_files('/mnt/HT_extractions/data_urllist')
+    create_part_files('/mnt/HT_extractions/data')
     jobs = []
     for i in range(0,8):
-        p = multiprocessing.Process(target=pipe, args=('/mnt/HT_extractions/data',i,))
+        p = multiprocessing.Process(target=pipe, args=('/mnt/Desktop/HT_extractions/data',i,))
         jobs.append(p)
         p.start()
