@@ -9,6 +9,7 @@ import logging
 import hbase
 import os
 import traceback
+import datetime
 
 def split(outfolder,infile,split=500):
     filein=open(infile,'r')
@@ -69,6 +70,7 @@ def pipe(folder,i):
     logger.addHandler(hdlr)
     logger.setLevel(logging.WARNING)
     process = str(i)
+    starttime = datetime.datetime.now()
     logger.warn('Starting Process: '+process)
 
 
@@ -79,8 +81,12 @@ def pipe(folder,i):
 
             if (os.path.exists(folder+'_urllist/'+str(i))==False):
                 logger.warn('Process ' + process + ': Partfile: ' + str(i) + ' ' + 'couldnt open folder or not found!')
-                continue
+                timenow = datetime.datetime.now()
+                logger.warn(timenow-starttime)
+                break
             logger.warn('Process ' + process + ': Partfile: ' + str(i) + ' ' + 'opening the part file for id and url')
+            timenow = datetime.datetime.now()
+            logger.warn(timenow - starttime)
             inputfile=open(folder+'_urllist/'+str(i),'r')
             outfile=open(folder+'_imagelist/'+str(i),'w')
 
@@ -89,6 +95,8 @@ def pipe(folder,i):
 
             #fetch the images, name them as their id and create a part file of local file locations
             logger.warn('Process ' + process + ': Partfile: ' + str(i) + ' ' + 'fetching image urls now..')
+            timenow = datetime.datetime.now()
+            logger.warn(timenow - starttime)
             filelist=[]
             for line in inputfile:
                 id=line.split(',')[0]
@@ -101,18 +109,24 @@ def pipe(folder,i):
 
             # run extraction by giving the list of files.
             logger.warn('Process ' + process + ': Partfile: ' + str(i) + ' '+'Running extractions on the url list')
+            timenow = datetime.datetime.now()
+            logger.warn(timenow - starttime)
             outfile.close()
             extract.extract(folder+'_imagelist',folder+'_extracted',str(i))
 
             #remove the downloaded image files
             for file in filelist:
-                os.remove(file)
+                if os.path.exists(file):
+                    logger.warn('Process ' + process + ': Partfile: ' + str(i) + ' ' + 'Deleting file: '+file)
+                    os.remove(file)
 
 
             #create a file with id and extraction and then send it to table
             #TODO: refresh connection
             #TODO: add timings
             logger.warn('Process ' + process + ': Partfile: ' + str(i) + ' ' + 'Connecting to the table')
+            timenow = datetime.datetime.now()
+            logger.warn(timenow - starttime)
             IP = '10.1.94.57'
             tablename = 'escorts_images_sha1_dev'
             extratedfile = open(folder+'_extracted/'+str(i),'r')  # json dumped by parser indexer
@@ -130,20 +144,22 @@ def pipe(folder,i):
 
         except Exception:
             logger.warn('ERROR: Process ' + process + ': Partfile: ' + str(i) + ' ' + traceback.format_exc())
+            timenow = datetime.datetime.now()
+            logger.warn(timenow - starttime)
 
 
         i+=8
 
 if __name__ == '__main__':
 
-    os.mkdir('/mnt/HT_extractions/data_urllist')
-    os.mkdir('/mnt/HT_extractions/data_imagelist')
-    os.mkdir('/mnt/HT_extractions/data_extracted')
-    os.mkdir('/mnt/HT_extractions/data_logs')
-    os.mkdir('/mnt/HT_extractions/data_images')
-    create_part_files('/mnt/HT_extractions/data')
+    # os.mkdir('/mnt/HT_extractions/data_urllist')
+    # os.mkdir('/mnt/HT_extractions/data_imagelist')
+    # os.mkdir('/mnt/HT_extractions/data_extracted')
+    # os.mkdir('/mnt/HT_extractions/data_logs')
+    # os.mkdir('/mnt/HT_extractions/data_images')
+    # create_part_files('/mnt/HT_extractions/data')
     jobs = []
     for i in range(0,8):
-        p = multiprocessing.Process(target=pipe, args=('/mnt/Desktop/HT_extractions/data',i,))
+        p = multiprocessing.Process(target=pipe, args=('/mnt/HT_extractions/data',i,))
         jobs.append(p)
         p.start()
